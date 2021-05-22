@@ -1,4 +1,4 @@
-package com.rmakiyama.sealion.home
+package com.rmakiyama.sealion.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
