@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rmakiyama.sealion.domain.Task
+import com.rmakiyama.sealion.domain.TaskId
 import com.rmakiyama.sealion.ui.theme.SeaLionTheme
 import com.rmakiyama.sealion.ui.widget.SeaLionFloatingActionButton
 import com.rmakiyama.sealion.ui.widget.SeaLionTopBar
@@ -21,12 +22,14 @@ import com.rmakiyama.sealion.ui.widget.TaskListItem
 
 @Composable
 fun HomeScreen(
-    onClickAddTask: () -> Unit = {},
+    onClickTask: (taskId: TaskId) -> Unit,
+    onClickAddTask: () -> Unit,
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val tasks: List<Task> by viewModel.tasks.collectAsState(initial = emptyList())
     HomeScreen(
         tasks = tasks,
+        onClickTask = onClickTask,
         onClickAddTask = onClickAddTask,
     )
 }
@@ -34,6 +37,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreen(
     tasks: List<Task>,
+    onClickTask: (taskId: TaskId) -> Unit,
     onClickAddTask: () -> Unit,
 ) {
     Scaffold(
@@ -46,7 +50,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(tasks) { task ->
-                TaskListItem(task = task)
+                TaskListItem(task = task, onClickTask = onClickTask)
             }
         }
     }
@@ -60,6 +64,6 @@ fun DefaultPreview() {
         Task("task 2", "task description")
     )
     SeaLionTheme {
-        HomeScreen(tasks = tasks, onClickAddTask = {})
+        HomeScreen(tasks = tasks, onClickTask = {}, onClickAddTask = {})
     }
 }

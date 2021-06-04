@@ -3,14 +3,14 @@ package com.rmakiyama.sealion.domain
 import java.util.UUID
 
 class Task private constructor(
-    val id: String,
+    val id: TaskId,
     val title: String,
     val description: String,
     var isCompleted: Boolean,
 ) {
 
     constructor(title: String, description: String = "") : this(
-        id = UUID.randomUUID().toString(),
+        id = TaskId(UUID.randomUUID().toString()),
         title = title,
         description = description,
         isCompleted = false,

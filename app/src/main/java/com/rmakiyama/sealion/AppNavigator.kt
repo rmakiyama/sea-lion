@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.rmakiyama.sealion.domain.TaskId
 import com.rmakiyama.sealion.ui.addedittask.AddEditTaskScreen
 import com.rmakiyama.sealion.ui.home.HomeScreen
 
@@ -16,16 +17,18 @@ fun AppNavigator(
         startDestination = Screen.Home.route
     ) {
         composable(Screen.Home.route) {
-            HomeScreen(onClickAddTask = {
-                navController.navigate(Screen.AddTask.route)
-            })
+            HomeScreen(
+                onClickTask = { id -> navController.navigate(Screen.EditTask.createRoute(id)) },
+                onClickAddTask = { navController.navigate(Screen.AddTask.route) }
+            )
         }
         composable(Screen.AddTask.route) {
             AddEditTaskScreen(taskId = null, navigateUp = { navController.popBackStack() })
         }
         composable(Screen.EditTask.route) { backStackEntry ->
+            val taskId = TaskId(requireNotNull(backStackEntry.arguments?.getString("taskId")))
             AddEditTaskScreen(
-                taskId = requireNotNull(backStackEntry.arguments?.getString("taskId")),
+                taskId = taskId,
                 navigateUp = { navController.popBackStack() },
             )
         }
@@ -36,6 +39,6 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object AddTask : Screen("addtask")
     object EditTask : Screen("edittask/{taskId}") {
-        fun createRoute(taskId: String): String = "edittask/${taskId}"
+        fun createRoute(taskId: TaskId): String = "edittask/${taskId.id}"
     }
 }

@@ -1,5 +1,6 @@
 package com.rmakiyama.sealion.ui.widget
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,19 +20,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rmakiyama.sealion.domain.Task
+import com.rmakiyama.sealion.domain.TaskId
 import com.rmakiyama.sealion.ui.theme.SeaLionTheme
 
 @Composable
 fun TaskListItem(
     modifier: Modifier = Modifier,
     task: Task,
+    onClickTask: (taskId: TaskId) -> Unit,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .clickable { onClickTask(task.id) }
+                .padding(16.dp)
         ) {
             Checkbox(
                 checked = task.isCompleted,
@@ -62,6 +67,6 @@ fun TaskListItem(
 private fun TaskItemPreview() {
     val task = Task(title = "task sample", description = "description")
     SeaLionTheme {
-        TaskListItem(task = task)
+        TaskListItem(onClickTask = {}, task = task)
     }
 }

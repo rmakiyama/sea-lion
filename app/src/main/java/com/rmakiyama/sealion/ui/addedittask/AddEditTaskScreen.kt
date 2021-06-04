@@ -24,8 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rmakiyama.sealion.R
 import com.rmakiyama.sealion.domain.Task
+import com.rmakiyama.sealion.domain.TaskId
 import com.rmakiyama.sealion.ui.theme.SeaLionTheme
 import com.rmakiyama.sealion.ui.widget.SeaLionTopBar
 import com.rmakiyama.sealion.ui.widget.UndecoratedTextField
@@ -33,11 +35,13 @@ import com.rmakiyama.sealion.ui.widget.UndecoratedTextField
 
 @Composable
 fun AddEditTaskScreen(
-    taskId: String? = null,
+    taskId: TaskId? = null,
     navigateUp: () -> Unit,
 ) {
+    val viewModel: AddEditTaskViewModel = hiltViewModel()
+    val task = taskId?.let { id -> viewModel.findTask(taskId = id) }
     AddEditTaskScreen(
-        task = null,
+        task = task,
         navigateUp = navigateUp,
         onSave = { _, _, _ -> },
     )
@@ -52,6 +56,8 @@ private fun AddEditTaskScreen(
     Scaffold(
         topBar = { SeaLionTopBar(navigateUp = navigateUp) },
     ) {
+        var title by remember { mutableStateOf(task?.title.orEmpty()) }
+        var description by remember { mutableStateOf(task?.description.orEmpty()) }
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
@@ -60,8 +66,6 @@ private fun AddEditTaskScreen(
                     .padding(bottom = 72.dp)
                     .verticalScroll(rememberScrollState()),
             ) {
-                var title by remember { mutableStateOf(task?.title.orEmpty()) }
-                var description by remember { mutableStateOf(task?.description.orEmpty()) }
                 UndecoratedTextField(
                     modifier = Modifier.fillMaxHeight(),
                     value = title,
@@ -80,7 +84,7 @@ private fun AddEditTaskScreen(
                 )
             }
             Button(
-                onClick = {},
+                onClick = { onSave(title, description, false) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomEnd)
@@ -88,15 +92,6 @@ private fun AddEditTaskScreen(
             ) {
                 Text(text = "save")
             }
-//            Button(
-//                onClick = {},
-//                modifier = Modifier
-//                    .padding(8.dp)
-//                    .fillMaxWidth()
-//                    .align(Alignment.BottomCenter),
-//            ) {
-//                Text(text = "save")
-//            }
         }
     }
 }
