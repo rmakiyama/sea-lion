@@ -15,15 +15,25 @@ import com.rmakiyama.sealion.ui.theme.SeaLionTheme
 import com.rmakiyama.sealion.ui.widget.SeaLionFloatingActionButton
 import com.rmakiyama.sealion.ui.widget.SeaLionTopBar
 import com.rmakiyama.sealion.ui.widget.TaskListItem
-import timber.log.Timber
 
 @Composable
-fun Home(
-    tasks: List<Task> = emptyList(),
+fun HomeScreen(
+    onClickAddTask: () -> Unit = {},
+) {
+    HomeScreen(
+        tasks = emptyList(),
+        onClickAddTask = onClickAddTask,
+    )
+}
+
+@Composable
+fun HomeScreen(
+    tasks: List<Task>,
+    onClickAddTask: () -> Unit,
 ) {
     Scaffold(
-        topBar = { SeaLionTopBar({ Text(text = "TODO") }) },
-        floatingActionButton = { SeaLionFloatingActionButton { Timber.d("click") } },
+        topBar = { SeaLionTopBar { Text(text = "TODO") } },
+        floatingActionButton = { SeaLionFloatingActionButton { onClickAddTask() } },
         floatingActionButtonPosition = FabPosition.Center,
     ) {
         LazyColumn(
@@ -45,6 +55,6 @@ fun DefaultPreview() {
         Task("task 2", "task description")
     )
     SeaLionTheme {
-        Home(tasks = tasks)
+        HomeScreen(tasks = tasks, onClickAddTask = {})
     }
 }
