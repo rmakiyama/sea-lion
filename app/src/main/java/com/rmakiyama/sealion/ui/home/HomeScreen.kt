@@ -8,8 +8,11 @@ import androidx.compose.material.FabPosition
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rmakiyama.sealion.domain.Task
 import com.rmakiyama.sealion.ui.theme.SeaLionTheme
 import com.rmakiyama.sealion.ui.widget.SeaLionFloatingActionButton
@@ -20,8 +23,10 @@ import com.rmakiyama.sealion.ui.widget.TaskListItem
 fun HomeScreen(
     onClickAddTask: () -> Unit = {},
 ) {
+    val viewModel: HomeViewModel = hiltViewModel()
+    val tasks: List<Task> by viewModel.tasks.collectAsState(initial = emptyList())
     HomeScreen(
-        tasks = emptyList(),
+        tasks = tasks,
         onClickAddTask = onClickAddTask,
     )
 }
