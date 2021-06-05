@@ -9,4 +9,5 @@ interface TasksRepository {
     fun loadTasks(): Flow<List<Task>>
     fun findById(taskId: TaskId): Task?
     fun save(task: Task)
+    fun updateCompleted(taskId: TaskId, isCompleted: Boolean)
 }

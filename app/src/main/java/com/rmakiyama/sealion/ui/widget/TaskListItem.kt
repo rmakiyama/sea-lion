@@ -32,6 +32,7 @@ fun TaskListItem(
     modifier: Modifier = Modifier,
     task: Task,
     onClickTask: (taskId: TaskId) -> Unit,
+    onTaskCompletedChange: (TaskId, Boolean) -> Unit,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -45,7 +46,10 @@ fun TaskListItem(
             var isCompleted by remember { mutableStateOf(task.isCompleted) }
             Checkbox(
                 checked = isCompleted,
-                onCheckedChange = { isCompleted = it },
+                onCheckedChange = {
+                    isCompleted = it
+                    onTaskCompletedChange(task.id, it)
+                },
             )
             Spacer(modifier = Modifier.size(16.dp))
             Column {
@@ -72,6 +76,6 @@ fun TaskListItem(
 private fun TaskItemPreview() {
     val task = Task(title = "task sample", description = "description")
     SeaLionTheme {
-        TaskListItem(onClickTask = {}, task = task)
+        TaskListItem(onClickTask = {}, task = task, onTaskCompletedChange = { _, _ -> })
     }
 }

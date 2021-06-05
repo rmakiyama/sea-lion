@@ -24,6 +24,12 @@ internal class InMemoryTasksRepository @Inject constructor() : TasksRepository {
         tasks.value = tasks.value.toMutableMap().apply { put(task.id, task) }
     }
 
+    override fun updateCompleted(taskId: TaskId, isCompleted: Boolean) {
+        tasks.value = tasks.value.toMutableMap().apply {
+            get(taskId)?.let { task -> put(taskId, task.copy(isCompleted = isCompleted)) }
+        }
+    }
+
     // fixme
     private fun createDummyTasks(): MutableMap<TaskId, Task> {
         val task1 = Task(title = "こんにちは")

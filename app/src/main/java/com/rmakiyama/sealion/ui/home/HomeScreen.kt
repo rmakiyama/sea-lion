@@ -35,16 +35,22 @@ fun HomeScreen(
     val tasks: List<Task> by viewModel.tasks.collectAsState(initial = emptyList())
     HomeScreen(
         tasks = tasks,
-        onClickTask = onClickTask,
-        onClickAddTask = onClickAddTask,
+        onAction = { action ->
+            when (action) {
+                HomeAction.NavigateAddTask -> onClickAddTask()
+                is HomeAction.NavigateEditTask -> onClickTask(action.taskId)
+                is HomeAction.UpdateCompleted -> {
+                    viewModel.updateCompleted(action.taskId, action.isCompleted)
+                }
+            }
+        },
     )
 }
 
 @Composable
-fun HomeScreen(
+private fun HomeScreen(
     tasks: List<Task>,
-    onClickTask: (taskId: TaskId) -> Unit,
-    onClickAddTask: () -> Unit,
+    onAction: (HomeAction) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -56,7 +62,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             SeaLionFloatingActionButton(modifier = Modifier.navigationBarsPadding()) {
-                onClickAddTask()
+                onAction(HomeAction.NavigateAddTask)
             }
         },
         floatingActionButtonPosition = FabPosition.Center,
@@ -73,7 +79,13 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(tasks) { task ->
-                TaskListItem(task = task, onClickTask = onClickTask)
+                TaskListItem(
+                    task = task,
+                    onClickTask = { onAction(HomeAction.NavigateEditTask(it)) },
+                    onTaskCompletedChange = { id, isCompleted ->
+                        onAction(HomeAction.UpdateCompleted(id, isCompleted))
+                    }
+                )
             }
         }
     }
@@ -87,6 +99,6 @@ fun DefaultPreview() {
         Task(title = "task 2", description = "task description")
     )
     SeaLionTheme {
-        HomeScreen(tasks = tasks, onClickTask = {}, onClickAddTask = {})
+        HomeScreen(tasks = tasks, onAction = {})
     }
 }
