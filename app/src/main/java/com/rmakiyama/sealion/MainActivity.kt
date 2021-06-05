@@ -20,15 +20,15 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             val navController = rememberNavController()
-            val systemUiController = rememberSystemUiController()
-            val useDarkIcons = MaterialTheme.colors.isLight
-            SideEffect {
-                systemUiController.setSystemBarsColor(
-                    color = Color.Transparent,
-                    darkIcons = useDarkIcons
-                )
-            }
             SeaLionTheme {
+                val systemUiController = rememberSystemUiController()
+                val useDarkIcons = MaterialTheme.colors.isLight
+                SideEffect {
+                    systemUiController.setSystemBarsColor(
+                        color = Color.Transparent,
+                        darkIcons = useDarkIcons
+                    )
+                }
                 ProvideWindowInsets { AppNavigator(navController) }
             }
         }
