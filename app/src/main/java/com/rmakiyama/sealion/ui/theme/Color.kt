@@ -2,7 +2,9 @@ package com.rmakiyama.sealion.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
+val SeaLionBlue200 = Color(0xFF97DAEA)
+val SeaLionBlue500 = Color(0xFF6DB4CA)
+val SeaLionBlue700 = Color(0xFF5C909E)
+val SeaLionOrange200 = Color(0xFFFAC8B)
+val SeaLionOrange400 = Color(0xFFFF7235)
+val SeaLionBrown50 = Color(0xFFFCF5EF)

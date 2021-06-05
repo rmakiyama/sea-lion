@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +29,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.statusBarsPadding
 import com.rmakiyama.sealion.R
 import com.rmakiyama.sealion.domain.TaskId
 import com.rmakiyama.sealion.ui.theme.SeaLionTheme
@@ -66,7 +70,16 @@ private fun AddEditTaskScreen(
     onAction: (AddEditTaskAction) -> Unit,
 ) {
     Scaffold(
-        topBar = { SeaLionTopBar(navigateUp = navigateUp) },
+        topBar = {
+            Surface(elevation = AppBarDefaults.TopAppBarElevation) {
+                SeaLionTopBar(
+                    navigateUp = navigateUp,
+                    modifier = Modifier.statusBarsPadding()
+                ) {
+                    Text(text = "TODO")
+                }
+            }
+        },
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (state.initialized) {
@@ -75,6 +88,7 @@ private fun AddEditTaskScreen(
 
                 Column(
                     modifier = Modifier
+                        .navigationBarsPadding()
                         .padding(16.dp)
                         .fillMaxHeight()
                         .padding(bottom = 72.dp)
@@ -110,6 +124,7 @@ private fun AddEditTaskScreen(
                         )
                     },
                     modifier = Modifier
+                        .navigationBarsPadding()
                         .fillMaxWidth()
                         .align(Alignment.BottomEnd)
                         .padding(16.dp)
