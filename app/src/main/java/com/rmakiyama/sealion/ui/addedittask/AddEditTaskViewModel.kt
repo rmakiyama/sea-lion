@@ -49,7 +49,7 @@ internal class AddEditTaskViewModel @Inject constructor(
                     taskId = action.taskId,
                     title = action.title,
                     description = action.description,
-                    isComplete = false
+                    isComplete = action.isComplete,
                 )
             }
         }
