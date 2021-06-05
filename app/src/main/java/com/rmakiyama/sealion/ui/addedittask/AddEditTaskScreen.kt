@@ -16,6 +16,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,12 +44,6 @@ fun AddEditTaskScreen(
 ) {
     val viewModel: AddEditTaskViewModel = hiltViewModel()
     val task: Task? by viewModel.findTask(taskId).collectAsState(initial = null)
-    var title by remember { mutableStateOf(task?.title.orEmpty()) }
-    var description by remember { mutableStateOf(task?.description.orEmpty()) }
-    LaunchedEffect(task) {
-        title = task?.title.orEmpty()
-        description = task?.description.orEmpty()
-    }
     LaunchedEffect(Unit) {
         viewModel.eventsFlow.collect { event ->
             when (event) {
@@ -57,30 +52,30 @@ fun AddEditTaskScreen(
         }
     }
     AddEditTaskScreen(
-        title = title,
-        onTitleChange = { title = it },
-        description = description,
-        onDescriptionChange = { description = it },
+        task = task,
         navigateUp = navigateUp,
-        onSave = { isComplete ->
-            viewModel.saveTask(taskId, title, description, isComplete)
-        },
-    )
+    ) { action ->
+        viewModel.handleAction(action)
+    }
 }
 
 @Composable
 private fun AddEditTaskScreen(
-    title: String,
-    onTitleChange: (String) -> Unit,
-    description: String,
-    onDescriptionChange: (String) -> Unit,
+    task: Task?,
     navigateUp: () -> Unit,
-    onSave: (isCompleted: Boolean) -> Unit,
+    onAction: (AddEditTaskAction) -> Unit,
 ) {
     Scaffold(
         topBar = { SeaLionTopBar(navigateUp = navigateUp) },
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            var title by remember { mutableStateOf(task?.title.orEmpty()) }
+            var description by remember { mutableStateOf(task?.description.orEmpty()) }
+            SideEffect {
+                title = task?.title.orEmpty()
+                description = task?.description.orEmpty()
+            }
+
             Column(
                 modifier = Modifier
                     .padding(16.dp)
@@ -91,7 +86,7 @@ private fun AddEditTaskScreen(
                 UndecoratedTextField(
                     modifier = Modifier.fillMaxHeight(),
                     value = title,
-                    onValueChange = onTitleChange,
+                    onValueChange = { title = it },
                     style = MaterialTheme.typography.h5,
                     singleLine = true,
                     hint = stringResource(id = R.string.hint_task_title)
@@ -100,14 +95,23 @@ private fun AddEditTaskScreen(
                 UndecoratedTextField(
                     modifier = Modifier.fillMaxHeight(),
                     value = description,
-                    onValueChange = onDescriptionChange,
+                    onValueChange = { description = it },
                     style = MaterialTheme.typography.body1,
                     hint = stringResource(id = R.string.hint_task_description)
                 )
             }
             Button(
-                // fixme
-                onClick = { onSave(false) },
+                onClick = {
+                    onAction(
+                        AddEditTaskAction.SaveTask(
+                            taskId = task?.id,
+                            title = title,
+                            description = description,
+                            // fixme
+                            isComplete = false,
+                        )
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomEnd)
@@ -124,12 +128,9 @@ private fun AddEditTaskScreen(
 private fun AddEditTaskPreview() {
     SeaLionTheme {
         AddEditTaskScreen(
-            title = "title",
-            onTitleChange = { },
-            description = "description",
-            onDescriptionChange = { },
+            task = null,
             navigateUp = {},
-            onSave = { },
+            onAction = { },
         )
     }
 }

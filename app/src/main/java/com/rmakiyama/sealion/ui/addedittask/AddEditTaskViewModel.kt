@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class AddEditTaskViewModel @Inject constructor(
+internal class AddEditTaskViewModel @Inject constructor(
     private val findTask: FindTaskUseCase,
     private val saveTask: SaveTaskUseCase,
 ) : ViewModel() {
@@ -31,7 +31,20 @@ class AddEditTaskViewModel @Inject constructor(
         }
     }
 
-    fun saveTask(
+    fun handleAction(action: AddEditTaskAction) {
+        when (action) {
+            is AddEditTaskAction.SaveTask -> {
+                saveTask(
+                    taskId = action.taskId,
+                    title = action.title,
+                    description = action.description,
+                    isComplete = false
+                )
+            }
+        }
+    }
+
+    private fun saveTask(
         taskId: TaskId?,
         title: String,
         description: String,
