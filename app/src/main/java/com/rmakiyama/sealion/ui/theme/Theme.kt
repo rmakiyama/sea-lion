@@ -11,10 +11,10 @@ private val DarkColorPalette = darkColors(
     primary = SeaLionBlue200,
     primaryVariant = SeaLionBlue700,
     secondary = SeaLionOrange200,
-).also { colors ->
+).let { colors ->
     colors.copy(
-        background = colors.primary.copy(alpha = 0.08f).compositeOver(colors.surface),
-        surface = colors.primary.copy(alpha = 0.08f).compositeOver(colors.surface)
+        background = colors.primary.copy(alpha = 0.12f).compositeOver(colors.surface),
+        surface = colors.primary.copy(alpha = 0.12f).compositeOver(colors.surface)
     )
 }
 
