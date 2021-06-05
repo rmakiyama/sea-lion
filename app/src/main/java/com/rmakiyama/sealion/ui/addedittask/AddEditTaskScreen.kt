@@ -136,6 +136,7 @@ private fun AddEditTaskScreen(
                             )
                         )
                     },
+                    enabled = title.isNotBlank(),
                     modifier = Modifier
                         .navigationBarsPadding()
                         .fillMaxWidth()
