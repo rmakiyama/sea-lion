@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
@@ -32,9 +30,11 @@ fun UndecoratedTextField(
 ) {
     Box(modifier = modifier.padding(top = 8.dp, bottom = 8.dp)) {
         if (value.isEmpty()) {
-            CompositionLocalProvider(LocalContentAlpha.provides(ContentAlpha.medium)) {
-                Text(text = hint, style = style)
-            }
+            Text(
+                text = hint,
+                style = style,
+                color = style.color.copy(alpha = ContentAlpha.medium)
+            )
         }
         BasicTextField(
             value = value,
