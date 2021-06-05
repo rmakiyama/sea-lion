@@ -8,7 +8,7 @@ import javax.inject.Inject
 class FindTaskUseCase @Inject constructor(
     private val tasksRepository: TasksRepository,
 ) : OneShotUseCase<FindTaskPrams, Task?>() {
-    override fun execute(params: FindTaskPrams): Task? {
+    override suspend fun execute(params: FindTaskPrams): Task? {
         return tasksRepository.findById(params.taskId)
     }
 }

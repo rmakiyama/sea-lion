@@ -23,13 +23,28 @@ fun AppNavigator(
             )
         }
         composable(Screen.AddTask.route) {
-            AddEditTaskScreen(taskId = null, navigateUp = { navController.popBackStack() })
+            AddEditTaskScreen(
+                taskId = null,
+                navigateUp = { navController.popBackStack() },
+                onSaved = {
+                    navController.popBackStack(
+                        route = Screen.Home.route,
+                        inclusive = false
+                    )
+                }
+            )
         }
         composable(Screen.EditTask.route) { backStackEntry ->
             val taskId = TaskId(requireNotNull(backStackEntry.arguments?.getString("taskId")))
             AddEditTaskScreen(
                 taskId = taskId,
                 navigateUp = { navController.popBackStack() },
+                onSaved = {
+                    navController.popBackStack(
+                        route = Screen.Home.route,
+                        inclusive = false
+                    )
+                }
             )
         }
     }

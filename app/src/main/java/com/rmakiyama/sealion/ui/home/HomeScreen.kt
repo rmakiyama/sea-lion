@@ -60,8 +60,8 @@ fun HomeScreen(
 @Composable
 fun DefaultPreview() {
     val tasks = listOf(
-        Task("task 1"),
-        Task("task 2", "task description")
+        Task(title = "task 1"),
+        Task(title = "task 2", description = "task description")
     )
     SeaLionTheme {
         HomeScreen(tasks = tasks, onClickTask = {}, onClickAddTask = {})

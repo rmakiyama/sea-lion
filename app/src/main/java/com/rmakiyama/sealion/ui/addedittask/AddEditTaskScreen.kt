@@ -15,6 +15,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,32 +34,46 @@ import com.rmakiyama.sealion.ui.theme.SeaLionTheme
 import com.rmakiyama.sealion.ui.widget.SeaLionTopBar
 import com.rmakiyama.sealion.ui.widget.UndecoratedTextField
 
-
 @Composable
 fun AddEditTaskScreen(
     taskId: TaskId? = null,
     navigateUp: () -> Unit,
+    onSaved: () -> Unit,
 ) {
     val viewModel: AddEditTaskViewModel = hiltViewModel()
-    val task = taskId?.let { id -> viewModel.findTask(taskId = id) }
+    val task: Task? by viewModel.findTask(taskId).collectAsState(initial = null)
+    var title by remember { mutableStateOf(task?.title.orEmpty()) }
+    var description by remember { mutableStateOf(task?.description.orEmpty()) }
+    LaunchedEffect(task) {
+        title = task?.title.orEmpty()
+        description = task?.description.orEmpty()
+    }
     AddEditTaskScreen(
-        task = task,
+        title = title,
+        onTitleChange = { title = it },
+        description = description,
+        onDescriptionChange = { description = it },
         navigateUp = navigateUp,
-        onSave = { _, _, _ -> },
+        onSave = { isComplete ->
+            viewModel.saveTask(taskId, title, description, isComplete)
+            // fixme
+            onSaved()
+        },
     )
 }
 
 @Composable
 private fun AddEditTaskScreen(
-    task: Task? = null,
+    title: String,
+    onTitleChange: (String) -> Unit,
+    description: String,
+    onDescriptionChange: (String) -> Unit,
     navigateUp: () -> Unit,
-    onSave: (title: String, description: String, isCompleted: Boolean) -> Unit,
+    onSave: (isCompleted: Boolean) -> Unit,
 ) {
     Scaffold(
         topBar = { SeaLionTopBar(navigateUp = navigateUp) },
     ) {
-        var title by remember { mutableStateOf(task?.title.orEmpty()) }
-        var description by remember { mutableStateOf(task?.description.orEmpty()) }
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
@@ -69,7 +85,7 @@ private fun AddEditTaskScreen(
                 UndecoratedTextField(
                     modifier = Modifier.fillMaxHeight(),
                     value = title,
-                    onValueChange = { title = it },
+                    onValueChange = onTitleChange,
                     style = MaterialTheme.typography.h5,
                     singleLine = true,
                     hint = stringResource(id = R.string.hint_task_title)
@@ -78,13 +94,14 @@ private fun AddEditTaskScreen(
                 UndecoratedTextField(
                     modifier = Modifier.fillMaxHeight(),
                     value = description,
-                    onValueChange = { description = it },
+                    onValueChange = onDescriptionChange,
                     style = MaterialTheme.typography.body1,
                     hint = stringResource(id = R.string.hint_task_description)
                 )
             }
             Button(
-                onClick = { onSave(title, description, false) },
+                // fixme
+                onClick = { onSave(false) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomEnd)
@@ -100,6 +117,13 @@ private fun AddEditTaskScreen(
 @Composable
 private fun AddEditTaskPreview() {
     SeaLionTheme {
-        AddEditTaskScreen(task = null, navigateUp = {}, onSave = { _, _, _ -> })
+        AddEditTaskScreen(
+            title = "title",
+            onTitleChange = { },
+            description = "description",
+            onDescriptionChange = { },
+            navigateUp = {},
+            onSave = { },
+        )
     }
 }

@@ -1,20 +1,10 @@
 package com.rmakiyama.sealion.domain
 
-import java.util.UUID
-
-class Task private constructor(
-    val id: TaskId,
+data class Task constructor(
+    val id: TaskId = TaskId.new(),
     val title: String,
-    val description: String,
-    var isCompleted: Boolean,
+    val description: String = "",
+    var isCompleted: Boolean = false,
 ) {
-
-    constructor(title: String, description: String = "") : this(
-        id = TaskId(UUID.randomUUID().toString()),
-        title = title,
-        description = description,
-        isCompleted = false,
-    )
-
     fun hasDescription(): Boolean = description.isNotEmpty()
 }
