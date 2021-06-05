@@ -12,7 +12,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
@@ -22,12 +23,22 @@ internal class AddEditTaskViewModel @Inject constructor(
     private val saveTask: SaveTaskUseCase,
 ) : ViewModel() {
 
+    private val task = MutableStateFlow<Task?>(null)
+    private val loading = MutableStateFlow<Boolean>(false)
+
     private val eventChannel = Channel<Event>(Channel.BUFFERED)
     val eventsFlow = eventChannel.receiveAsFlow()
 
-    fun findTask(taskId: TaskId?): Flow<Task?> {
-        return flow {
-            taskId?.let { id -> emit(findTask(FindTaskPrams(taskId = id))) } ?: emit(null)
+    val state: Flow<AddEditTaskViewState> = combine(task, loading) { task, loading ->
+        AddEditTaskViewState(initialized = true, task = task, loading)
+    }
+
+    fun findTask(taskId: TaskId?) {
+        viewModelScope.launch {
+            runCatching {
+                taskId?.let { id -> task.emit(findTask(FindTaskPrams(taskId = id))) }
+                    ?: task.emit(null)
+            }
         }
     }
 
@@ -51,6 +62,7 @@ internal class AddEditTaskViewModel @Inject constructor(
         isComplete: Boolean,
     ) {
         viewModelScope.launch {
+            loading.value = true
             runCatching {
                 saveTask(
                     SaveTaskPrams(
@@ -62,6 +74,7 @@ internal class AddEditTaskViewModel @Inject constructor(
                 )
                 eventChannel.send(Event.TaskSaved)
             }
+            loading.value = false
         }
     }
 

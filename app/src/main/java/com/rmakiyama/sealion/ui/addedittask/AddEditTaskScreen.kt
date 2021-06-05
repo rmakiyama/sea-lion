@@ -16,7 +16,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rmakiyama.sealion.R
-import com.rmakiyama.sealion.domain.Task
 import com.rmakiyama.sealion.domain.TaskId
 import com.rmakiyama.sealion.ui.theme.SeaLionTheme
 import com.rmakiyama.sealion.ui.widget.SeaLionTopBar
@@ -43,8 +41,10 @@ fun AddEditTaskScreen(
     onSaved: () -> Unit,
 ) {
     val viewModel: AddEditTaskViewModel = hiltViewModel()
-    val task: Task? by viewModel.findTask(taskId).collectAsState(initial = null)
+    val state: AddEditTaskViewState by viewModel.state
+        .collectAsState(AddEditTaskViewState.Empty)
     LaunchedEffect(Unit) {
+        viewModel.findTask(taskId)
         viewModel.eventsFlow.collect { event ->
             when (event) {
                 AddEditTaskViewModel.Event.TaskSaved -> onSaved()
@@ -52,7 +52,7 @@ fun AddEditTaskScreen(
         }
     }
     AddEditTaskScreen(
-        task = task,
+        state = state,
         navigateUp = navigateUp,
     ) { action ->
         viewModel.handleAction(action)
@@ -61,7 +61,7 @@ fun AddEditTaskScreen(
 
 @Composable
 private fun AddEditTaskScreen(
-    task: Task?,
+    state: AddEditTaskViewState,
     navigateUp: () -> Unit,
     onAction: (AddEditTaskAction) -> Unit,
 ) {
@@ -69,55 +69,53 @@ private fun AddEditTaskScreen(
         topBar = { SeaLionTopBar(navigateUp = navigateUp) },
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            var title by remember { mutableStateOf(task?.title.orEmpty()) }
-            var description by remember { mutableStateOf(task?.description.orEmpty()) }
-            SideEffect {
-                title = task?.title.orEmpty()
-                description = task?.description.orEmpty()
-            }
+            if (state.initialized) {
+                var title by remember { mutableStateOf(state.task?.title.orEmpty()) }
+                var description by remember { mutableStateOf(state.task?.description.orEmpty()) }
 
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxHeight()
-                    .padding(bottom = 72.dp)
-                    .verticalScroll(rememberScrollState()),
-            ) {
-                UndecoratedTextField(
-                    modifier = Modifier.fillMaxHeight(),
-                    value = title,
-                    onValueChange = { title = it },
-                    style = MaterialTheme.typography.h5,
-                    singleLine = true,
-                    hint = stringResource(id = R.string.hint_task_title)
-                )
-                Spacer(modifier = Modifier.size(12.dp))
-                UndecoratedTextField(
-                    modifier = Modifier.fillMaxHeight(),
-                    value = description,
-                    onValueChange = { description = it },
-                    style = MaterialTheme.typography.body1,
-                    hint = stringResource(id = R.string.hint_task_description)
-                )
-            }
-            Button(
-                onClick = {
-                    onAction(
-                        AddEditTaskAction.SaveTask(
-                            taskId = task?.id,
-                            title = title,
-                            description = description,
-                            // fixme
-                            isComplete = false,
-                        )
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxHeight()
+                        .padding(bottom = 72.dp)
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    UndecoratedTextField(
+                        modifier = Modifier.fillMaxHeight(),
+                        value = title,
+                        onValueChange = { title = it },
+                        style = MaterialTheme.typography.h5,
+                        singleLine = true,
+                        hint = stringResource(id = R.string.hint_task_title)
                     )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-            ) {
-                Text(text = "save")
+                    Spacer(modifier = Modifier.size(12.dp))
+                    UndecoratedTextField(
+                        modifier = Modifier.fillMaxHeight(),
+                        value = description,
+                        onValueChange = { description = it },
+                        style = MaterialTheme.typography.body1,
+                        hint = stringResource(id = R.string.hint_task_description)
+                    )
+                }
+                Button(
+                    onClick = {
+                        onAction(
+                            AddEditTaskAction.SaveTask(
+                                taskId = state.task?.id,
+                                title = title,
+                                description = description,
+                                // fixme
+                                isComplete = false,
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                ) {
+                    Text(text = "save")
+                }
             }
         }
     }
@@ -128,7 +126,7 @@ private fun AddEditTaskScreen(
 private fun AddEditTaskPreview() {
     SeaLionTheme {
         AddEditTaskScreen(
-            task = null,
+            state = AddEditTaskViewState.Empty,
             navigateUp = {},
             onAction = { },
         )
