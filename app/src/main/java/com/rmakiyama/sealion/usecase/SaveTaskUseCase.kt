@@ -11,8 +11,8 @@ class SaveTaskUseCase @Inject constructor(
     override suspend fun execute(params: SaveTaskPrams) {
         val task = Task(
             id = params.taskId ?: TaskId.new(),
-            title = params.title,
-            description = params.description,
+            title = params.title.trim(),
+            description = params.description.trim(),
             isCompleted = params.isComplete,
         )
         return tasksRepository.save(task)

@@ -72,11 +72,11 @@ private fun HomeScreen(
                 insets = LocalWindowInsets.current.navigationBars,
                 applyTop = false,
                 additionalStart = 16.dp,
-                additionalTop = 8.dp,
+                additionalTop = 16.dp,
                 additionalEnd = 16.dp,
                 additionalBottom = 88.dp,
             ),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(tasks) { task ->
                 TaskListItem(

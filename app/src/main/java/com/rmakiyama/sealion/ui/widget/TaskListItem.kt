@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rmakiyama.sealion.domain.Task
@@ -36,6 +37,7 @@ fun TaskListItem(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
+        elevation = 2.dp,
     ) {
         Row(
             verticalAlignment = Alignment.Top,
@@ -63,6 +65,8 @@ fun TaskListItem(
                         Text(
                             text = task.description,
                             style = MaterialTheme.typography.body2,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 2,
                         )
                     }
                 }
