@@ -33,6 +33,7 @@ import com.rmakiyama.sealion.domain.TaskId
 import com.rmakiyama.sealion.ui.theme.SeaLionTheme
 import com.rmakiyama.sealion.ui.widget.SeaLionTopBar
 import com.rmakiyama.sealion.ui.widget.UndecoratedTextField
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun AddEditTaskScreen(
@@ -48,6 +49,13 @@ fun AddEditTaskScreen(
         title = task?.title.orEmpty()
         description = task?.description.orEmpty()
     }
+    LaunchedEffect(Unit) {
+        viewModel.eventsFlow.collect { event ->
+            when (event) {
+                AddEditTaskViewModel.Event.TaskSaved -> onSaved()
+            }
+        }
+    }
     AddEditTaskScreen(
         title = title,
         onTitleChange = { title = it },
@@ -56,8 +64,6 @@ fun AddEditTaskScreen(
         navigateUp = navigateUp,
         onSave = { isComplete ->
             viewModel.saveTask(taskId, title, description, isComplete)
-            // fixme
-            onSaved()
         },
     )
 }

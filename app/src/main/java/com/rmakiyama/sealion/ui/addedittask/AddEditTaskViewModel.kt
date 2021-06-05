@@ -10,8 +10,10 @@ import com.rmakiyama.sealion.usecase.SaveTaskPrams
 import com.rmakiyama.sealion.usecase.SaveTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -19,6 +21,9 @@ class AddEditTaskViewModel @Inject constructor(
     private val findTask: FindTaskUseCase,
     private val saveTask: SaveTaskUseCase,
 ) : ViewModel() {
+
+    private val eventChannel = Channel<Event>(Channel.BUFFERED)
+    val eventsFlow = eventChannel.receiveAsFlow()
 
     fun findTask(taskId: TaskId?): Flow<Task?> {
         return flow {
@@ -42,7 +47,12 @@ class AddEditTaskViewModel @Inject constructor(
                         isComplete = isComplete,
                     )
                 )
+                eventChannel.send(Event.TaskSaved)
             }
         }
+    }
+
+    sealed class Event {
+        object TaskSaved : Event()
     }
 }
