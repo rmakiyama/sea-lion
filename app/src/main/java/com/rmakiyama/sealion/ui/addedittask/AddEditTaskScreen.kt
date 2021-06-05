@@ -75,9 +75,7 @@ private fun AddEditTaskScreen(
                 SeaLionTopBar(
                     navigateUp = navigateUp,
                     modifier = Modifier.statusBarsPadding()
-                ) {
-                    Text(text = "TODO")
-                }
+                )
             }
         },
     ) {
@@ -98,7 +96,9 @@ private fun AddEditTaskScreen(
                         modifier = Modifier.fillMaxHeight(),
                         value = title,
                         onValueChange = { title = it },
-                        style = MaterialTheme.typography.h5,
+                        style = MaterialTheme.typography.h5.copy(
+                            color = MaterialTheme.colors.onSurface,
+                        ),
                         singleLine = true,
                         hint = stringResource(id = R.string.hint_task_title)
                     )
@@ -107,7 +107,9 @@ private fun AddEditTaskScreen(
                         modifier = Modifier.fillMaxHeight(),
                         value = description,
                         onValueChange = { description = it },
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.body1.copy(
+                            color = MaterialTheme.colors.onSurface,
+                        ),
                         hint = stringResource(id = R.string.hint_task_description)
                     )
                 }
